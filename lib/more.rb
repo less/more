@@ -83,7 +83,9 @@ class Less::More
       self.map.each do |file|
         file[:destination].dirname.mkpath unless file[:destination].dirname.exist?
         
-        modified = self.read_imports(file[:source]).push(file[:source]).max { |x, y| x.mtime <=> y.mtime }.mtime
+        # Import parsing disabled - see issue 1
+        #modified = self.read_imports(file[:source]).push(file[:source]).max { |x, y| x.mtime <=> y.mtime }.mtime
+        modified = file[:source].mtime
   
         if !file[:destination].exist? || modified > file[:destination].mtime
           css = Less::Engine.new(file[:source].open).to_css
@@ -104,7 +106,10 @@ class Less::More
       imports = file.read.scan(/@import\s+(['"])(.*?)\1/i)
       
       imports.collect! do |v|
-        path = file.dirname.join(v.last + ".less")
+        filename = v.last
+        filename << ".less" unless filename.ends_with? ".less"
+        
+        path = file.dirname.join(filename)
         path.exist? ? self.read_imports(path).push(path) : nil
       end
       
