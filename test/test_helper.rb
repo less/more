@@ -1,10 +1,14 @@
 require 'test/unit'
 
-begin
-  require File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'config', 'environment')
-rescue LoadError => e
-  puts "Please run these tests within a Rails app"
-  exit
+require 'rubygems'
+require 'active_support'
+
+module Rails
+  extend self
+  
+  def env
+    "development"
+  end
 end
 
 begin
