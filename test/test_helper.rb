@@ -10,6 +10,10 @@ module Rails
   def env
     "development"
   end
+  
+  def root
+    Pathname.new("/tmp")
+  end
 end
 
 begin

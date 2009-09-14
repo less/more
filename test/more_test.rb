@@ -7,6 +7,10 @@ class MoreTest < Test::Unit::TestCase
     end
   end
   
+  def teardown
+    FileUtils.rm_rf(Less::More.destination_path)
+  end
+  
   def test_getting_config_from_current_environment_or_defaults_to_production
     Less::More::DEFAULTS["development"]["foo"] = 5
     Less::More::DEFAULTS["production"]["foo"] = 10
@@ -61,7 +65,10 @@ class MoreTest < Test::Unit::TestCase
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
     Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     
-    assert_equal [{ :source => Less::More.source_path.join("test.less"), :destination => Less::More.destination_path.join("test.css") }], Less::More.map
+    assert_equal [
+      {:source => Less::More.source_path.join("test.less"), :destination => Less::More.destination_path.join("test.css") },
+      {:source => Less::More.source_path.join("short.lss"), :destination => Less::More.destination_path.join("short.css")}
+    ], Less::More.map
   end
   
   def test_parse
@@ -72,7 +79,14 @@ class MoreTest < Test::Unit::TestCase
     Less::More.parse
 
     assert_equal ".allforms{font-size:110%;}body{color:#222222;}form{font-size:110%;color:#ffffff;}", Less::More.destination_path.join("test.css").read
+  end
+  
+  def test_lss
+    Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
+    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     
-    Less::More.destination_path.join("test.css").delete
+    Less::More.parse
+    assert File.file?(Less::More.destination_path.join("short.css"))
+    assert_equal "p { color: red; }\n", File.read(Less::More.destination_path.join("short.css"))
   end
 end

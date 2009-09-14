@@ -102,7 +102,7 @@ class Less::More
     # Example:
     #   Less::More.map => [{ :source => #<Pathname:...>, :destination => #<Pathname:...> }, ...]
     def map
-      files = Pathname.glob(self.source_path.join("**", "*.less")).reject { |f| f.basename.to_s.starts_with? "_" }
+      files = Pathname.glob(self.source_path.join("**", "*.{less,lss}")).reject { |f| f.basename.to_s.starts_with? "_" }
       
       files.collect! do |file|
         relative_path = file.relative_path_from(self.source_path)
