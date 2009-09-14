@@ -1,6 +1,44 @@
 require 'test_helper'
 
 class MoreTest < Test::Unit::TestCase
+  def setup
+    class << Less::More
+      [:@compression, :@header, :@page_cache].each {|v| remove_instance_variable(v) if instance_variable_defined?(v) }
+    end
+  end
+  
+  def test_getting_config_from_current_environment_or_defaults_to_production
+    Less::More::DEFAULTS["development"]["foo"] = 5
+    Less::More::DEFAULTS["production"]["foo"] = 10
+    
+    Rails.expects(:env).returns("development")
+    assert_equal 5, Less::More.get_cvar("foo")
+    
+    Rails.expects(:env).returns("production")
+    assert_equal 10, Less::More.get_cvar("foo")
+    
+    Rails.expects(:env).returns("staging")
+    assert_equal 10, Less::More.get_cvar("foo")
+  end
+  
+  def test_cvar_gets_predesence_for_user_values
+    Less::More::DEFAULTS["development"][:page_cache] = false
+    assert_equal false, Less::More.page_cache?
+    
+    Less::More.page_cache = true
+    assert_equal true, Less::More.page_cache?
+  end
+  
+  def test_page_cache_off_on_heroku
+    Less::More.page_cache = true
+    Less::More::DEFAULTS["development"][:page_cache] = true
+    
+    # The party pooper
+    Less::More.expects(:heroku?).returns(true)
+    
+    assert_equal false, Less::More.page_cache?
+  end
+  
   def test_compression
     Less::More.compression = true
     assert_equal Less::More.compression?, true
