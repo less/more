@@ -123,37 +123,11 @@ class Less::More
       self.map.each do |file|
         file[:destination].dirname.mkpath unless file[:destination].dirname.exist?
         
-        # Import parsing disabled - see issue 1
-        #modified = self.read_imports(file[:source]).push(file[:source]).max { |x, y| x.mtime <=> y.mtime }.mtime
-        modified = file[:source].mtime
-  
-        if !file[:destination].exist? || modified > file[:destination].mtime
-          css = Less::Engine.new(file[:source].open).to_css
-          css = css.delete " \n" if self.compression?
+        css = Less::Engine.new(file[:source].open).to_css
+        css = css.delete " \n" if self.compression?
 
-          file[:destination].open("w") { |f| f.write css }
-        end
+        file[:destination].open("w") { |f| f.write css }
       end
-    end
-    
-    # Recusively reads import statement from less files and returns an array of `Pathname`. It also checks that
-    # the files are present in the filesystem.
-    #
-    # Example:
-    #   p = Pathname.new("/path/to/file")
-    #   Less::More.read_imports(p) => [#<Pathname:/path/to/include1>, #<Pathname:/path/to/include2>, ...]
-    def read_imports(file)
-      imports = file.read.scan(/@import\s+(['"])(.*?)\1/i)
-      
-      imports.collect! do |v|
-        filename = v.last
-        filename << ".less" unless filename.ends_with? ".less"
-        
-        path = file.dirname.join(filename)
-        path.exist? ? self.read_imports(path).push(path) : nil
-      end
-      
-      imports.flatten.compact.uniq
     end
   
   end
