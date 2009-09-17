@@ -7,6 +7,13 @@
 # By default, Less::More.parse will be called for each request in `development` environment and on
 # application initialization in `production` environment.
 
+begin
+  require 'less'
+rescue LoadError => e
+  e.message << " (You may need to install the less gem)"
+  raise e
+end
+
 class Less::More
   DEFAULTS = {
     "production" => {
