@@ -61,32 +61,28 @@ class MoreTest < Test::Unit::TestCase
     assert_equal Pathname.new("/path/to/flaf"), Less::More.destination_path
   end
   
-  def test_map
+  def test_exists
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
     Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     
-    assert_equal [
-      {:source => Less::More.source_path.join("test.less"), :destination => Less::More.destination_path.join("test.css") },
-      {:source => Less::More.source_path.join("short.lss"), :destination => Less::More.destination_path.join("short.css")}
-    ], Less::More.map
+    assert Less::More.exists?(["test"])
+    assert Less::More.exists?(["short"])
+    assert Less::More.exists?(["sub", "test2"])
   end
   
-  def test_parse
+  def test_generate
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
     Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     Less::More.compression = true
     
-    Less::More.parse
-
-    assert_equal ".allforms{font-size:110%;}body{color:#222222;}form{font-size:110%;color:#ffffff;}", Less::More.destination_path.join("test.css").read
+    assert_equal ".allforms{font-size:110%;}body{color:#222222;}form{font-size:110%;color:#ffffff;}", Less::More.generate(["test"])
   end
   
-  def test_lss
+  def test_pathname_from_array
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
-    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     
-    Less::More.parse
-    assert File.file?(Less::More.destination_path.join("short.css"))
-    assert_equal "p { color: red; }\n", File.read(Less::More.destination_path.join("short.css"))
+    assert Less::More.pathname_from_array(["test"]).exist?
+    assert Less::More.pathname_from_array(["short"]).exist?
+    assert Less::More.pathname_from_array(["sub", "test2"]).exist?
   end
 end

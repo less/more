@@ -1,0 +1,32 @@
+require 'test_helper'
+
+class LessCacheControllerTest < ActionController::IntegrationTest
+  def setup
+    Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
+    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
+  end
+  
+  test "regular stylesheet" do
+    get "stylesheets/test.css"
+    assert_response :success
+    assert @response.body.include?("body { color: #222222; }")
+  end
+  
+  test "sub-folder" do
+    get "stylesheets/sub/test2.css"
+    assert_response :success
+    assert @response.body.include?("div { display: none; }")
+  end
+  
+  test "404" do
+    Less::More.expects(:generate).never
+    get "stylesheets/does_not_exist.css"
+    assert_response 404
+  end
+  
+  test "setting headers with page cache" do
+    Less::More.expects(:page_cache?).returns(false)
+    get "stylesheets/test.css"
+    assert @response.headers["Cache-Control"]
+  end
+end

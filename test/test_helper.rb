@@ -3,6 +3,9 @@ require 'test/unit'
 require 'rubygems'
 require 'mocha'
 require 'active_support'
+require 'action_controller'
+
+ActionController::Base.session_store = nil
 
 module Rails
   extend self
@@ -14,7 +17,20 @@ module Rails
   def root
     Pathname.new("/tmp")
   end
+  
+  def backtrace_cleaner
+    ActiveSupport::BacktraceCleaner.new
+  end
 end
+
+class ApplicationController < ActionController::Base
+end
+
+# Ugh.. shouldn't these be required for us?
+Dir.chdir("#{File.dirname(__FILE__)}/../") {
+  require "config/routes"
+  require 'app/controllers/less_cache_controller'
+}
 
 begin
   require 'less'

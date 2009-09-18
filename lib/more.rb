@@ -82,7 +82,7 @@ class Less::More
     
     # Returns the destination path for the parsed CSS files, see `destination_path=`
     def destination_path
-      @destination_path || Rails.root.join("public", "stylesheets")
+      @destination_path || Pathname.new(Rails.root.join("public", "stylesheets"))
     end
     
     # Sets the destination path for the parsed CSS files. The directory structure from the source path will be retained, and
@@ -97,38 +97,40 @@ class Less::More
       @destination_path = Pathname.new(path.to_s)
     end
     
-    # Returns a collection of matching files in the source path, which will be parsed.
+    # Checks if a .less or .lss file exists in Less::More.source_path matching
+    # the given parameters.
     #
-    # Example:
-    #   Less::More.map => [{ :source => #<Pathname:...>, :destination => #<Pathname:...> }, ...]
-    def map
-      files = Pathname.glob(self.source_path.join("**", "*.{less,lss}")).reject { |f| f.basename.to_s.starts_with? "_" }
+    #   Less::More.exists?(["screen"])
+    #   Less::More.exists?(["subdirectories", "here", "homepage"])
+    def exists?(path_as_array)
+      pathname = pathname_from_array(path_as_array)
+      pathname && pathname.exist?
+    end
+    
+    # Generates the .css from a .less or .lss file in Less::More.source_path matching
+    # the given parameters.
+    #
+    #   Less::More.generate(["screen"])
+    #   Less::More.generate(["subdirectories", "here", "homepage"])
+    #
+    # Returns the CSS as a string.
+    def generate(path_as_array)
+      source = pathname_from_array(path_as_array)
       
-      files.collect! do |file|
-        relative_path = file.relative_path_from(self.source_path)
-        { :source => file, :destination => self.destination_path.join(relative_path.dirname, relative_path.basename(relative_path.extname).to_s + ".css") }
-      end
-    end
+      relative_path = source.relative_path_from(self.source_path)
+      destination = self.destination_path.join(relative_path.dirname, relative_path.basename(relative_path.extname)).to_s + ".css"
+      engine = File.open(source) {|f| Less::Engine.new(f) }
+      css = engine.to_css
+      css.delete!(" \n") if self.compression?
 
-    # Performs the core functionality of passing the LESS files from the source path through LESS and outputting CSS files to
-    # the destination path. The LESS files will only be parsed if the CSS file is not present, or if the modification time of
-    # the LESS file or any of its included files are newer than the CSS files. Imported files are recursively checked for updated
-    # modification times.
-    #
-    # If `compression` is enabled, extra line breaks will be removed.
-    #
-    # Example:
-    #   Less::More.parse
-    def parse
-      self.map.each do |file|
-        file[:destination].dirname.mkpath unless file[:destination].dirname.exist?
-        
-        css = Less::Engine.new(file[:source].open).to_css
-        css = css.delete " \n" if self.compression?
-
-        file[:destination].open("w") { |f| f.write css }
-      end
+      css
     end
-  
+    
+    # Converts ["foo", "bar"] into a `Pathname` based on Less::More.source_path.
+    def pathname_from_array(array)
+      path_spec = array.dup
+      path_spec[-1] = path_spec[-1] + ".{less,lss}"
+      Pathname.glob(self.source_path.join(*path_spec))[0]
+    end
   end
 end
