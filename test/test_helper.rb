@@ -26,12 +26,6 @@ end
 class ApplicationController < ActionController::Base
 end
 
-# Ugh.. shouldn't these be required for us?
-Dir.chdir("#{File.dirname(__FILE__)}/../") {
-  require "config/routes"
-  require 'app/controllers/less_cache_controller'
-}
-
 begin
   require 'less'
 rescue LoadError => e
@@ -40,3 +34,9 @@ rescue LoadError => e
 end
 
 require 'more'
+
+# Ugh.. shouldn't these be required for us?
+Dir.chdir("#{File.dirname(__FILE__)}/../") {
+  require "config/routes"
+  require 'app/controllers/less_cache_controller'
+}

@@ -68,9 +68,9 @@ To set the source path (the location of your LESS files):
 
 	Less::More.source_path = "/path/to/less/files"
 	
-To set the destination path, add a route in your apps `config/routes.rb`.
+You can also set the destination path. Be careful with the formatting here, since this is in fact a route, and not a regular path.
 
-	map.connect 'stylesheets/custom/*id.css', :controller => 'less_cache', :action => "show"
+	Less::More.source_path = "css"
 
 More can compress your files by removing extra line breaks. This is enabled by default in the `production` environment. To change this setting, set:
 
