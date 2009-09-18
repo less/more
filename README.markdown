@@ -70,7 +70,7 @@ To set the source path (the location of your LESS files):
 	
 You can also set the destination path. Be careful with the formatting here, since this is in fact a route, and not a regular path.
 
-	Less::More.source_path = "css"
+	Less::More.destination_path = "css"
 
 More can compress your files by removing extra line breaks. This is enabled by default in the `production` environment. To change this setting, set:
 
