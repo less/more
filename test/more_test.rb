@@ -69,7 +69,7 @@ class MoreTest < Test::Unit::TestCase
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
     Less::More.compression = true
     
-    assert_equal ".allforms{font-size:110%;}body{color:#222222;}form{font-size:110%;color:#ffffff;}", Less::More.generate(["test"])
+    assert_equal ".allforms { font-size: 110%; }body { color: #222222; }form {  font-size: 110%;  color: #ffffff;}", Less::More.generate(["test"])
   end
   
   def test_pathname_from_array

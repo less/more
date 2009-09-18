@@ -110,7 +110,7 @@ class Less::More
       source = pathname_from_array(path_as_array)
       engine = File.open(source) {|f| Less::Engine.new(f) }
       css = engine.to_css
-      css.delete!(" \n") if self.compression?
+      css.delete!("\n") if self.compression?
       css
     end
     
