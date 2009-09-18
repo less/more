@@ -80,23 +80,6 @@ class Less::More
       @source_path = Pathname.new(path.to_s)
     end
     
-    # Returns the destination path for the parsed CSS files, see `destination_path=`
-    def destination_path
-      @destination_path || Pathname.new(Rails.root.join("public", "stylesheets"))
-    end
-    
-    # Sets the destination path for the parsed CSS files. The directory structure from the source path will be retained, and
-    # all files, except partials prefixed with underscore, will be available with a .css extension.
-    #
-    # Default value is public/stylesheets
-    #
-    # Examples:
-    #   Less::More.destination_path = "/path/to/css/files"
-    #   Less::More.destination_path = Pathname.new("/other/path")
-    def destination_path=(path)
-      @destination_path = Pathname.new(path.to_s)
-    end
-    
     # Checks if a .less or .lss file exists in Less::More.source_path matching
     # the given parameters.
     #
@@ -118,13 +101,9 @@ class Less::More
     # Returns the CSS as a string.
     def generate(path_as_array)
       source = pathname_from_array(path_as_array)
-      
-      relative_path = source.relative_path_from(self.source_path)
-      destination = self.destination_path.join(relative_path.dirname, relative_path.basename(relative_path.extname)).to_s + ".css"
       engine = File.open(source) {|f| Less::Engine.new(f) }
       css = engine.to_css
       css.delete!(" \n") if self.compression?
-
       css
     end
     

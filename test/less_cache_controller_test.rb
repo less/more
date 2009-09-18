@@ -3,7 +3,6 @@ require 'test_helper'
 class LessCacheControllerTest < ActionController::IntegrationTest
   def setup
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
-    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
   end
   
   test "regular stylesheet" do

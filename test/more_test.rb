@@ -7,10 +7,7 @@ class MoreTest < Test::Unit::TestCase
     end
   end
   
-  def teardown
-    FileUtils.rm_rf(Less::More.destination_path)
-  end
-  
+
   def test_getting_config_from_current_environment_or_defaults_to_production
     Less::More::DEFAULTS["development"]["foo"] = 5
     Less::More::DEFAULTS["production"]["foo"] = 10
@@ -56,14 +53,8 @@ class MoreTest < Test::Unit::TestCase
     assert_equal Pathname.new("/path/to/flaf"), Less::More.source_path
   end
   
-  def test_destination_path
-    Less::More.destination_path = "/path/to/flaf"
-    assert_equal Pathname.new("/path/to/flaf"), Less::More.destination_path
-  end
-  
   def test_exists
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
-    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     
     assert Less::More.exists?(["test"])
     assert Less::More.exists?(["short"])
@@ -72,12 +63,10 @@ class MoreTest < Test::Unit::TestCase
     # Partials does not exist
     assert !Less::More.exists?(["_global"])
     assert !Less::More.exists?(["shared", "_form"])
-    
   end
   
   def test_generate
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
-    Less::More.destination_path = File.join(File.dirname(__FILE__), 'css_files')
     Less::More.compression = true
     
     assert_equal ".allforms{font-size:110%;}body{color:#222222;}form{font-size:110%;color:#ffffff;}", Less::More.generate(["test"])

@@ -6,3 +6,7 @@ rescue LoadError => e
 end
 
 require File.join(File.dirname(__FILE__), 'lib', 'more')
+
+config.after_initialize {
+  LessCacheController.expire_page("/stylesheets/test.css")
+}
