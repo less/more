@@ -103,6 +103,8 @@ class Less::More
     #   Less::More.exists?(["screen"])
     #   Less::More.exists?(["subdirectories", "here", "homepage"])
     def exists?(path_as_array)
+      return false if path_as_array[-1].starts_with?("_")
+      
       pathname = pathname_from_array(path_as_array)
       pathname && pathname.exist?
     end

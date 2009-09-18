@@ -68,6 +68,11 @@ class MoreTest < Test::Unit::TestCase
     assert Less::More.exists?(["test"])
     assert Less::More.exists?(["short"])
     assert Less::More.exists?(["sub", "test2"])
+    
+    # Partials does not exist
+    assert !Less::More.exists?(["_global"])
+    assert !Less::More.exists?(["shared", "_form"])
+    
   end
   
   def test_generate
