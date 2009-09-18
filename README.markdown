@@ -78,11 +78,11 @@ More can compress your files by removing extra line breaks. This is enabled by d
 
 If you're on a read-only file system, you can turn page caching off and use Cache-Control headers. This option is on by default on heroku.
 
-	Less::More.page_cache = true
+	Less::More.page_cache = false
   
 More inserts headers in the generated CSS files, letting people know that the file is in fact generated and shouldn't be edited directly. This is by default only enabled in development mode. You can disable this behavior if you want to.
 
-	Less::More.header = true
+	Less::More.header = false
 
 To configure More for a specific environment, add configuration options into the environment file, such as `config/environments/development.rb`.
 
