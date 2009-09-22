@@ -7,7 +7,7 @@ namespace :more do
     puts "Parsing files from #{Less::More.source_path}."
     puts
 
-    all_less_files.each do |path|
+    Less::More.all_less_files.each do |path|
       # Get path
       relative_path = path.relative_path_from(Less::More.source_path)
       path_as_array = relative_path.to_s.split(File::SEPARATOR)
@@ -38,22 +38,9 @@ namespace :more do
   desc "Remove generated CSS files"
   task :clean => :environment do
     puts "Deleting files.."
-    puts
     
-    all_less_files.each do |path|
-      relative_path = path.relative_path_from(Less::More.source_path)
-      css_path = relative_path.to_s.sub(/le?ss$/, "css")
-      css_file = File.join(Rails.root, "public", Less::More.destination_path, css_path)
-      File.delete(css_file) if File.file?(css_file)
-      puts css_file
-      puts "  Deleted"
-    end
-    
-    puts
+    Less::More.clean
+
     puts "Done."
-  end
-  
-  def all_less_files
-    Dir[Less::More.source_path.join("**", "*.{less,lss}")].map! {|f| Pathname.new(f) }
   end
 end

@@ -114,6 +114,21 @@ class Less::More
       css
     end
     
+    # Removes all generated css files.
+    def clean
+      all_less_files.each do |path|
+        relative_path = path.relative_path_from(Less::More.source_path)
+        css_path = relative_path.to_s.sub(/le?ss$/, "css")
+        css_file = File.join(Rails.root, "public", Less::More.destination_path, css_path)
+        File.delete(css_file) if File.file?(css_file)
+      end
+    end
+    
+    # Array of Pathname instances for all the less source files.
+    def all_less_files
+      Dir[Less::More.source_path.join("**", "*.{less,lss}")].map! {|f| Pathname.new(f) }
+    end
+    
     # Converts ["foo", "bar"] into a `Pathname` based on Less::More.source_path.
     def pathname_from_array(array)
       path_spec = array.dup
