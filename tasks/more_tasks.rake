@@ -5,7 +5,7 @@ namespace :more do
   desc "Generate CSS files from LESS files"
   task :parse => :environment do
     puts "Parsing files from #{Less::More.source_path}."
-    Less::More.generate
+    Less::More.parse
     puts "Done."
 
   end

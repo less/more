@@ -115,7 +115,7 @@ class Less::More
     end
     
     # Generates all the .css files.
-    def generate
+    def parse
       Less::More.all_less_files.each do |path|
         # Get path
         relative_path = path.relative_path_from(Less::More.source_path)
