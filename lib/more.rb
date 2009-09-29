@@ -114,6 +114,28 @@ class Less::More
       css
     end
     
+    # Generates all the .css files.
+    def generate
+      Less::More.all_less_files.each do |path|
+        # Get path
+        relative_path = path.relative_path_from(Less::More.source_path)
+        path_as_array = relative_path.to_s.split(File::SEPARATOR)
+        path_as_array[-1] = File.basename(path_as_array[-1], File.extname(path_as_array[-1]))
+
+        # Generate CSS
+        css = Less::More.generate(path_as_array)
+
+        # Store CSS
+        path_as_array[-1] = path_as_array[-1] + ".css"
+        destination = Pathname.new(File.join(Rails.root, "public", Less::More.destination_path)).join(*path_as_array)
+        destination.dirname.mkpath
+
+        File.open(destination, "w") {|f|
+          f.puts css
+        }
+      end
+    end
+    
     # Removes all generated css files.
     def clean
       all_less_files.each do |path|

@@ -9,4 +9,5 @@ require File.join(File.dirname(__FILE__), 'lib', 'more')
 
 config.after_initialize {
   Less::More.clean
+  Less::More.generate if Less::More.page_cache?
 }
