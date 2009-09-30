@@ -18,7 +18,7 @@ class Less::More
     "development" => {
       :compression        => false,
       :header             => true,
-      :page_cache         => true,
+      :page_cache         => false,
       :destination_path   => "stylesheets"
     }
   }
