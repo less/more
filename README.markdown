@@ -16,6 +16,13 @@ LESS
 
 LESS extends CSS with: variables, mixins, operations and nested rules. For more information, see [http://lesscss.org](http://lesscss.org).
 
+Upgrading from less-for-rails
+=======================================
+
+The old `less-for-rails` plugin looked for `.less` files in `public/stylesheets`. This plugin looks in `app/stylesheets`.
+
+To migrate, you can either set `Less::More.source_path = Rails.root + "/public/stylesheets"`, or move your `.less` files to `app/stylesheets`.
+
 
 Installation
 ============
