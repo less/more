@@ -12,13 +12,11 @@ class Less::More
     "production" => {
       :compression        => true,
       :header             => false,
-      :page_cache         => true,
       :destination_path   => "stylesheets"
     },
     "development" => {
       :compression        => false,
       :header             => true,
-      :page_cache         => false,
       :destination_path   => "stylesheets"
     }
   }
@@ -38,9 +36,14 @@ class Less::More
       get_cvar(:compression)
     end
 
-    # TODO: Use controllers and page cache to generate the files.
+    # Check wether or not we should page cache the generated CSS
     def page_cache?
-      (not heroku?) && get_cvar(:page_cache)
+      (not heroku?) && page_cache_enabled_in_environment_configuration?
+    end
+    
+    # For easy mocking.
+    def page_cache_enabled_in_environment_configuration?
+      Rails.configuration.action_controller.perform_caching
     end
     
     # Tells the plugin to prepend HEADER to all generated CSS, informing users

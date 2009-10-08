@@ -2,8 +2,10 @@ require 'test_helper'
 
 class MoreTest < Test::Unit::TestCase
   def setup
-    class << Less::More
-      [:@compression, :@header, :@page_cache].each {|v| remove_instance_variable(v) if instance_variable_defined?(v) }
+    Less::More.class_eval do
+      ["@compression", "@header"].each {|v|
+        remove_instance_variable(v) if instance_variable_defined?(v)
+      }
     end
   end
   
@@ -22,12 +24,25 @@ class MoreTest < Test::Unit::TestCase
     assert_equal 10, Less::More.get_cvar("foo")
   end
   
-  def test_cvar_gets_predesence_for_user_values
-    Less::More::DEFAULTS["development"][:page_cache] = false
-    assert_equal false, Less::More.page_cache?
+  def test_user_settings_wins_over_defaults
+    Less::More::DEFAULTS["development"][:compression] = true
+    assert_equal true, Less::More.compression?
     
-    Less::More.page_cache = true
+    Less::More::DEFAULTS["development"][:compression] = false
+    assert_equal false, Less::More.compression?
+    
+    Less::More.compression = true
+    assert_equal true, Less::More.compression?
+  end
+  
+  def test_page_cache_is_read_from_environment_configs
+    Less::More.expects(:heroku?).returns(false).times(2)
+    
+    Less::More.expects(:page_cache_enabled_in_environment_configuration?).returns(true)
     assert_equal true, Less::More.page_cache?
+    
+    Less::More.expects(:page_cache_enabled_in_environment_configuration?).returns(false)
+    assert_equal false, Less::More.page_cache?
   end
   
   def test_page_cache_off_on_heroku
