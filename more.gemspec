@@ -9,7 +9,7 @@ SPEC = Gem::Specification.new do |s|
     More is a plugin for Ruby on Rails applications. It automatically
     parses your applications .less files through LESS and outputs CSS files.
   EOS
-  s.author = "Alexis Sellier"
+  s.authors = ["August Lilleaas", "Logan Raarup"]
   s.version = "0.0.3"
   s.files = FileList["README.markdown", "MIT-LICENSE", "Rakefile", "init.rb", "lib/*.rb", "rails/init.rb", "tasks/*", "test/*"]
   s.has_rdoc = true
