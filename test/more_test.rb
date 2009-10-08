@@ -69,7 +69,17 @@ class MoreTest < Test::Unit::TestCase
     Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
     Less::More.compression = true
     
-    assert_equal ".allforms { font-size: 110%; }body { color: #222222; }form {  font-size: 110%;  color: #ffffff;}", Less::More.generate(["test"])
+    assert Less::More.generate(["test"]).include?(".allforms { font-size: 110%; }body { color: #222222; }form {  font-size: 110%;  color: #ffffff;}")
+  end
+  
+  def test_header
+    Less::More.expects(:header?).returns(false)
+    Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
+    assert !Less::More.generate(["test"]).starts_with?("/*")
+    
+    Less::More.expects(:header?).returns(true)
+    Less::More.source_path = File.join(File.dirname(__FILE__), 'less_files')
+    assert Less::More.generate(["test"]).starts_with?("/*")
   end
   
   def test_pathname_from_array

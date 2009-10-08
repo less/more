@@ -48,9 +48,8 @@ class Less::More
     # .less file should be edited instead.
     #
     #    Less::More.header = false
-    def header
-      result = get_cvar(:header)
-      get_cvar(:header) ? DEFAULT_HEADER : ""
+    def header?
+      get_cvar(:header)
     end
     
     # The path, or route, where you want your .css files to live.
@@ -111,6 +110,8 @@ class Less::More
       engine = File.open(source) {|f| Less::Engine.new(f) }
       css = engine.to_css
       css.delete!("\n") if self.compression?
+      css = (HEADER % [source.to_s]) << css if self.header?
+      
       css
     end
     
