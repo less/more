@@ -166,7 +166,7 @@ class Less::More
     def pathname_from_array(array)
       path_spec = array.dup
       path_spec[-1] = path_spec[-1] + ".{less,lss}"
-      Pathname.glob(self.source_path.join(*path_spec))[0]
+      Pathname.glob(File.join(self.source_path.to_s, *path_spec))[0]
     end
   end
 end
