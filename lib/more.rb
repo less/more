@@ -117,11 +117,16 @@ class Less::More
     # Returns the CSS as a string.
     def generate(path_as_array)
       source = pathname_from_array(path_as_array)
-      engine = File.open(source) {|f| Less::Engine.new(f) }
-      css = engine.to_css
-      css.delete!("\n") if self.compression?
-      css = (HEADER % [source.to_s]) << css if self.header?
       
+      if source.extname == ".css"
+        css = File.read(source)
+      else
+        engine = File.open(source) {|f| Less::Engine.new(f) }
+        css = engine.to_css
+        css.delete!("\n") if self.compression?
+        css = (HEADER % [source.to_s]) << css if self.header?
+      end
+
       css
     end
     
@@ -151,7 +156,7 @@ class Less::More
     def clean
       all_less_files.each do |path|
         relative_path = path.relative_path_from(Less::More.source_path)
-        css_path = relative_path.to_s.sub(/le?ss$/, "css")
+        css_path = relative_path.to_s.sub(/(le?|c)ss$/, "css")
         css_file = File.join(Rails.root, "public", Less::More.destination_path, css_path)
         File.delete(css_file) if File.file?(css_file)
       end
@@ -159,13 +164,13 @@ class Less::More
     
     # Array of Pathname instances for all the less source files.
     def all_less_files
-      Dir[Less::More.source_path.join("**", "*.{less,lss}")].map! {|f| Pathname.new(f) }
+      Dir[Less::More.source_path.join("**", "*.{css,less,lss}")].map! {|f| Pathname.new(f) }
     end
     
     # Converts ["foo", "bar"] into a `Pathname` based on Less::More.source_path.
     def pathname_from_array(array)
       path_spec = array.dup
-      path_spec[-1] = path_spec[-1] + ".{less,lss}"
+      path_spec[-1] = path_spec[-1] + ".{css,less,lss}"
       Pathname.glob(File.join(self.source_path.to_s, *path_spec))[0]
     end
   end

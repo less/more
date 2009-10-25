@@ -19,6 +19,13 @@ class LessCacheControllerTest < ActionController::IntegrationTest
     assert @response.body.include?("div { display: none; }")
   end
   
+  test "plain css stylesheet" do
+    Less::More.expects(:page_cache_enabled_in_environment_configuration?).returns(true).at_least_once
+    get "stylesheets/plain.css"
+    assert_response :success
+    assert @response.body.include?("div { width: 1 + 1 }")
+  end
+  
   test "404" do
     Less::More.expects(:page_cache_enabled_in_environment_configuration?).returns(true)
     Less::More.expects(:generate).never

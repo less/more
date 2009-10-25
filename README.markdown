@@ -67,6 +67,8 @@ If you prefix a file with an underscore, it is considered to be a partial, and w
 
 The example above will result in a single CSS file in `public/stylesheets/clients/screen.css`.
 
+Any `.css` file placed in `app/stylesheets` will be copied into `public/stylesheets` without being parsed through LESS.
+
 
 Configuration
 =============
