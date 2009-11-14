@@ -1,5 +1,6 @@
 class LessCacheController < ApplicationController
   caches_page :show, :if => proc { Less::More.page_cache? }
+  write_inheritable_attribute('filter_chain', FilterChain.new)
   
   def show
     path_spec = params[:id]
