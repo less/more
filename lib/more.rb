@@ -164,7 +164,7 @@ class Less::More
     
     # Array of Pathname instances for all the less source files.
     def all_less_files
-      Dir[Less::More.source_path.join("**", "*.{css,less,lss}")].map! {|f| Pathname.new(f) }
+      Dir[Less::More.source_path.join("**", "*.{css,less,lss}").to_s].map! {|f| Pathname.new(f) }
     end
     
     # Converts ["foo", "bar"] into a `Pathname` based on Less::More.source_path.
