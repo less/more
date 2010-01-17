@@ -122,25 +122,29 @@ class Less::More
     def generate(path_as_array)
       source = pathname_from_array(path_as_array)
       
-      # check the tmp directory for an existing file
+      # put together our destination dir and path (need dir so we can create subdirectories)
       destination_dir = source.dirname.to_s.gsub(source_path, cache_path)
       destination = File.join(destination_dir, source.basename.to_s.gsub('.less', '.css').gsub('.lss', '.css'))
       
-      # compare the modified times
+      # check if the destination file exists, and compare the modified times to see if it needs to be written
       if File.exists?(destination) and File.new(destination).mtime >= File.new(source).mtime
         # cached destination file is the same as the source, just return the cached file
         css = File.read(destination)
       else
+        # cached file doesn't exist or it's out of date
         if source.extname == ".css"
+          # vanilla css
           css = File.read(source)
         else
+          # less or lss file, compile it
           engine = File.open(source) {|f| Less::Engine.new(f) }
           css = engine.to_css
           css.delete!("\n") if self.compression?
           css = (HEADER % [source.to_s]) << css if self.header?
         end
-        # write the file to our cache
+        # make sure the appropriate cache directory exists
         FileUtils.mkdir_p destination_dir
+        # write the css to our cache directory
         File.open(destination, "w") {|f|
           f.puts css
         }
