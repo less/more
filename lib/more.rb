@@ -75,7 +75,7 @@ class Less::More
     # Returns true if the app is running on Heroku. When +heroku?+ is true,
     # +page_cache?+ will always be false.
     def heroku?
-      !!ENV["HEROKU_ENV"]
+      ENV.any? {|key, value| key =~ /^heroku/i }
     end
     
     # Returns the LESS source path, see `source_path=`
