@@ -33,6 +33,4 @@ rescue LoadError => e
   raise e
 end
 
-RAILS_ROOT = Rails.root
-
-require 'more'
+require 'less/more'

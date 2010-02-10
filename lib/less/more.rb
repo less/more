@@ -109,7 +109,7 @@ class Less::More
     end
     
     def cache_path
-      File.join(RAILS_ROOT, 'tmp', 'less-cache')
+      File.join(Rails.root, 'tmp', 'less-cache')
     end
             
     # Generates the .css from a .less or .lss file in Less::More.source_path matching
