@@ -125,7 +125,7 @@ class Less::More
       # put together our destination dir and path (need dir so we can create subdirectories)
       destination_dir = source.dirname.to_s.gsub(source_path, cache_path)
       destination = File.join(destination_dir, source.basename.to_s.gsub('.less', '.css').gsub('.lss', '.css'))
-      
+
       # check if the destination file exists, and compare the modified times to see if it needs to be written
       if File.exists?(destination) and File.new(destination).mtime >= File.new(source).mtime
         # cached destination file is the same as the source, just return the cached file

@@ -33,10 +33,6 @@ rescue LoadError => e
   raise e
 end
 
-require 'more'
+RAILS_ROOT = Rails.root
 
-# Ugh.. shouldn't these be required for us?
-Dir.chdir("#{File.dirname(__FILE__)}/../") {
-  require "config/routes"
-  require 'app/controllers/less_cache_controller'
-}
+require 'more'
