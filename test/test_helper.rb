@@ -33,7 +33,7 @@ rescue LoadError => e
   raise e
 end
 
-require 'more'
+require 'less/more'
 
 # Ugh.. shouldn't these be required for us?
 Dir.chdir("#{File.dirname(__FILE__)}/../") {
