@@ -1,6 +1,6 @@
 class ActionController::Base
   def process_with_less(*args)
-    Less::More.parse
+    Less::More.generate_all
     process_without_less(*args)
   end
 
