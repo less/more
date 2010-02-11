@@ -140,7 +140,7 @@ class Less::More
           engine = File.open(source) {|f| Less::Engine.new(f) }
           css = engine.to_css
           css.delete!("\n") if self.compression?
-          css = (HEADER % [source.to_s]) << css if self.header?
+          css = (HEADER % [source.to_s.sub(File.expand_path('.'), '')]) << css if self.header?
         end
         # make sure the appropriate cache directory exists
         FileUtils.mkdir_p destination_dir
