@@ -11,10 +11,16 @@ class MoreTest < Test::Unit::TestCase
     Less::More.source_path = 'less_files'
     Less::More.destination_path = 'css'
 
-    css = "#{Rails.root}/public/css"
-    `rm -rf #{css}`
-    `mkdir -p #{css}`
-    css
+    `rm -rf #{css_path}`
+    `mkdir -p #{css_path}`
+  end
+
+  def css_path
+    "#{Rails.root}/public/css"
+  end
+
+  def teardown
+    `rm -rf #{css_path}`
   end
 
   def test_default_for_header
@@ -54,7 +60,7 @@ class MoreTest < Test::Unit::TestCase
   end
 
   def test_generate_with_partials
-    css_path = prepare_for_generate
+    prepare_for_generate
     Less::More.generate_all
     css = File.read(File.join(css_path, 'test.css'))
     assert css.include?(".allforms { font-size: 110%; }
@@ -66,14 +72,14 @@ form {
   end
 
   def test_generate_does_not_parse_css
-    css_path = prepare_for_generate
+    prepare_for_generate
     Less::More.generate_all
     original_css = File.read(File.join(css_path, 'plain.css'))
     assert_equal File.read(File.join(Rails.root,'less_files', 'plain.css')), original_css
   end
 
   def test_generate_uses_header_when_set
-    css_path = prepare_for_generate
+    prepare_for_generate
     Less::More.header = true
     Less::More.generate_all
     css = File.read(File.join(css_path, 'test.css'))
@@ -81,7 +87,7 @@ form {
   end
 
   def test_generate_uses_no_header_when_not_set
-    css_path = prepare_for_generate
+    prepare_for_generate
     Less::More.header = false
     Less::More.generate_all
     css = File.read(File.join(css_path, 'test.css'))
@@ -89,7 +95,7 @@ form {
   end
 
   def test_generate_does_not_generate_partials
-    css_path = prepare_for_generate
+    prepare_for_generate
     Less::More.generate_all
     assert !File.exist?(File.join(css_path, '_global.css'))
   end
