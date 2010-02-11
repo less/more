@@ -1,7 +1,6 @@
 class ActionController::Base
   def process_with_less(*args)
     Less::More.parse
-    logger.info('xxxxx')
     process_without_less(*args)
   end
 
