@@ -163,19 +163,47 @@ class MoreTest < ActiveSupport::TestCase
       should "generate for outdated less files" do
         write_less 'test.less', "a{color:red}"
         Less::More.generate_all
+
         write_css 'test.css', 'im updated!'
         sleep 1 # or mtime will be still the same ...
         write_less 'test.less', "a{color:blue}"
         Less::More.generate_all
+
         assert_equal 'a { color: blue; }', read_css('test.css').strip
       end
 
       should "not generate for up-to-date less files" do
         write_less 'test.less', "a{color:red}"
         Less::More.generate_all
+
         write_css 'test.css', 'im updated!'
         Less::More.generate_all
+
         assert_equal 'im updated!', read_css('test.css')
+      end
+
+      should "not generate for files with up-to-date partials" do
+        write_less 'test.less', "@import 'xxx/_test.less';"
+        write_less 'xxx/_test.less', "a{color:red}"
+        Less::More.generate_all
+
+        write_css 'test.css', 'im updated!'
+        Less::More.generate_all
+
+        assert_equal 'im updated!', read_css('test.css')
+      end
+
+      should "generate for files with outdated partials" do
+        write_less 'test.less', "@import 'xxx/_test.less';"
+        write_less 'xxx/_test.less', "a{color:red}"
+        Less::More.generate_all
+
+        write_css 'test.css', 'im updated!'
+        sleep 1 # or mtime will be still the same ...
+        write_less 'xxx/_test.less', "a{color:blue}"
+        Less::More.generate_all
+
+        assert_equal 'a { color: blue; }', read_css('test.css').strip
       end
     end
   end

@@ -50,7 +50,7 @@ class Less::More
       path_to_source = File.join(Rails.root, source_path, source)
 
       # check if the destination file exists, and compare the modified times to see if it needs to be written
-      if File.exists?(generated) and File.mtime(generated) >= File.mtime(path_to_source)
+      if mtime(generated) >= mtime_including_imports(path_to_source)
         # up to date, nothing to do!
       else
         # css file does not exist or is out of date
@@ -94,6 +94,21 @@ class Less::More
     end
 
     private
+
+    def mtime(file)
+      return 0 unless File.file?(file)
+      File.mtime(file).to_i
+    end
+
+    # consider imports for mtime
+    # just 1 level deep so we do not get any looping/nesting errors
+    def mtime_including_imports(file)
+      mtimes = [mtime(file)]
+      File.readlines(file).each do |line|
+        mtimes << mtime(File.join(File.dirname(file), $1)) if line =~ /^\s*@import ['"]([^'"]+)/
+      end
+      mtimes.max
+    end
 
     def compile(file)
       begin
