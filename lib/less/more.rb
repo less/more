@@ -59,8 +59,7 @@ class Less::More
           File.read(path_to_source)
         else
           # less or lss file, compile it
-          engine = File.open(path_to_source){|f| Less::Engine.new(f) }
-          css = engine.to_css
+          css = compile(path_to_source)
           css.delete!("\n") if compression # TODO: use real compression !
           css = (HEADER % [File.join(source_path, source)]) << css if header
           css
@@ -94,6 +93,16 @@ class Less::More
     def all_less_files
       all = Dir[File.join(Rails.root, source_path, "**", "*.{css,less,lss}")]
       all.reject{|path| File.basename(path) =~ /^_/ }
+    end
+
+    def compile(file)
+      begin
+        engine = File.open(file){|f| Less::Engine.new(f) }
+        engine.to_css
+      rescue Exception => e
+        e.message << "\nFrom #{file}"
+        raise e
+      end
     end
   end
 end

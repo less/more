@@ -126,5 +126,16 @@ class MoreTest < ActiveSupport::TestCase
       Less::More.generate_all
       assert_not_include '/*', read_css('test.css')
     end
+
+    should "fail with current file when encountering an error" do
+      write_less 'test.less', 'import xxxx;;;;;'
+      content = begin
+        Less::More.generate_all
+        '!no exception!'
+      rescue Exception => e
+        e.message
+      end
+      assert_include '/test.less', content
+    end
   end
 end
