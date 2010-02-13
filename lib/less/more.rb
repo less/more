@@ -46,7 +46,7 @@ class Less::More
     #   Less::More.generate("screen.less")
     #   Less::More.generate("subdirectories/here/homepage.less")
     def generate(source)
-      generated = File.join(Rails.root, 'public', destination_path, source.sub(/\.le?ss$/, '.css'))
+      generated = to_dot_css(path_to_destination(source))
       path_to_source = File.join(Rails.root, source_path, source)
 
       # check if the destination file exists, and compare the modified times to see if it needs to be written
@@ -54,7 +54,7 @@ class Less::More
         # up to date, nothing to do!
       else
         # css file does not exist or is out of date
-        css = if File.extname(source) == ".css"
+        css = if File.extname(path_to_source) == ".css"
           # vanilla css nothing to do!
           File.read(path_to_source)
         else
@@ -73,27 +73,27 @@ class Less::More
     
     # Generates all the .css files
     def generate_all
-      Less::More.all_less_files.each do |path|
-        relative_path = path.sub(File.join(Rails.root, source_path),'')[1..-1]
-        Less::More.generate(relative_path)
+      all_less_files.each do |path|
+        generate(relative_to_source_path(path))
       end
     end
     
     # Removes all generated css files.
     def remove_all_generated
       all_less_files.each do |path|
-        relative_path = path.sub(File.join(Rails.root, source_path), '')
-        css_path = relative_path.to_s.sub(/(le?|c)ss$/, "css")
-        css_file = File.join(Rails.root, "public", destination_path, css_path)
+        css_path  = to_dot_css(relative_to_source_path(path))
+        css_file = path_to_destination(css_path)
         File.delete(css_file) if File.file?(css_file)
       end
     end
-    
+
     # Array of paths of less source files.
     def all_less_files
       all = Dir[File.join(Rails.root, source_path, "**", "*.{css,less,lss}")]
       all.reject{|path| File.basename(path) =~ /^_/ }
     end
+
+    private
 
     def compile(file)
       begin
@@ -103,6 +103,18 @@ class Less::More
         e.message << "\nFrom #{file}"
         raise e
       end
+    end
+
+    def to_dot_css(path)
+      path.to_s.sub(/(le?|c)ss$/, "css")
+    end
+
+    def path_to_destination(path)
+      File.join(Rails.root, "public", destination_path, path)
+    end
+
+    def relative_to_source_path(path)
+      path.to_s.sub(File.join(Rails.root, source_path), '')[1..-1]
     end
   end
 end
