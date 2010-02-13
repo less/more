@@ -88,12 +88,19 @@ class MoreTest < ActiveSupport::TestCase
     setup do
       Less::More.source_path = 'less_files'
       Less::More.destination_path = 'css'
+      Less::More.header = false
       `mkdir -p #{css_path}`
     end
 
     teardown do
       `rm -rf #{css_path}`
       `rm -rf #{less_path}`
+    end
+
+    should 'generate css from .less files' do
+      write_less 'test.less', "a{color:red}"
+      Less::More.generate_all
+      assert_include 'a { color: red; }', read_css('test.css')
     end
 
     should 'generate css from .lss files' do
@@ -150,6 +157,26 @@ class MoreTest < ActiveSupport::TestCase
         e.message
       end
       assert_include '/test.less', content
+    end
+
+    context 'mtime' do
+      should "generate for outdated less files" do
+        write_less 'test.less', "a{color:red}"
+        Less::More.generate_all
+        write_css 'test.css', 'im updated!'
+        sleep 1 # or mtime will be still the same ...
+        write_less 'test.less', "a{color:blue}"
+        Less::More.generate_all
+        assert_equal 'a { color: blue; }', read_css('test.css').strip
+      end
+
+      should "not generate for up-to-date less files" do
+        write_less 'test.less', "a{color:red}"
+        Less::More.generate_all
+        write_css 'test.css', 'im updated!'
+        Less::More.generate_all
+        assert_equal 'im updated!', read_css('test.css')
+      end
     end
   end
 
