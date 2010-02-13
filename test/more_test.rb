@@ -55,6 +55,27 @@ class MoreTest < ActiveSupport::TestCase
     "#{Rails.root}/public/css"
   end
 
+  def less_path
+    "#{Rails.root}/less_files"
+  end
+
+  def write_less file, content
+    `mkdir -p #{File.join(less_path, File.dirname(file))}`
+    File.open("#{less_path}/#{file}",'w'){|f| f.print content }
+  end
+
+  def read_css(file)
+    File.read(File.join(css_path, file)) rescue nil
+  end
+
+  def assert_include(item, obj)
+    assert_block("#{obj.inspect}\ndoes not include\n#{item.inspect}."){ obj.include? item }
+  end
+
+  def assert_not_include(item, obj)
+    assert_block("#{obj.inspect}\ndoes include\n#{item.inspect}."){ !obj.include? item }
+  end
+
   context :generate do
     setup do
       Less::More.source_path = 'less_files'
@@ -64,42 +85,40 @@ class MoreTest < ActiveSupport::TestCase
 
     teardown do
       `rm -rf #{css_path}`
+      `rm -rf #{less_path}`
     end
 
-    should "include imported partials" do
+    should "include import partials" do
+      write_less 'test.less', "@import '_partial';\nb{color:blue}"
+      write_less '_partial.less', 'a{color:red}'
       Less::More.generate_all
-      css = File.read(File.join(css_path, 'test.css'))
-      assert css.include?(".allforms { font-size: 110%; }
-body { color: #222222; }
-form {
-  font-size: 110%;
-  color: #ffffff;
-}")
+      assert_include 'a { color: red; }', read_css('test.css')
+    end
+
+    should "not parse partials" do
+      write_less '_partial.less', 'a{color:red}'
+      Less::More.generate_all
+      assert_equal '', `ls #{css_path}`.strip
     end
 
     should "not parse css" do
+      write_less 'test.css', 'a{color:red}'
       Less::More.generate_all
-      original_css = File.read(File.join(css_path, 'plain.css'))
-      assert_equal File.read(File.join(Rails.root,'less_files', 'plain.css')), original_css
+      assert_equal 'a{color:red}', read_css('test.css')
     end
 
     should "add disclaimer-header when active" do
+      write_less 'test.less', 'a{color:red}'
       Less::More.header = true
       Less::More.generate_all
-      css = File.read(File.join(css_path, 'test.css'))
-      assert_match /^\/\*/, css # starts with comment -> header
+      assert_match /^\/\*/, read_css('test.css')
     end
 
     should "not include header when not set" do
+      write_less 'test.less', 'a{color:red}'
       Less::More.header = false
       Less::More.generate_all
-      css = File.read(File.join(css_path, 'test.css'))
-      assert_match /^\.allforms/, css
-    end
-
-    should "not generate partials" do
-      Less::More.generate_all
-      assert !File.exist?(File.join(css_path, '_global.css'))
+      assert_not_include '/*', read_css('test.css')
     end
   end
 end
