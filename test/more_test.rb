@@ -60,8 +60,16 @@ class MoreTest < ActiveSupport::TestCase
   end
 
   def write_less file, content
-    `mkdir -p #{File.join(less_path, File.dirname(file))}`
-    File.open("#{less_path}/#{file}",'w'){|f| f.print content }
+    write_content File.join(less_path, file), content
+  end
+
+  def write_css file, content
+    write_content File.join(css_path, file), content
+  end
+
+  def write_content file, content
+    `mkdir -p #{File.dirname(file)}`
+    File.open(file,'w'){|f| f.print content }
   end
 
   def read_css(file)
@@ -92,6 +100,12 @@ class MoreTest < ActiveSupport::TestCase
       write_less 'test.lss', "a{color:red}"
       Less::More.generate_all
       assert_include 'a { color: red; }', read_css('test.css')
+    end
+
+    should 'generate for files in subfolders' do
+      write_less 'xxx/test.less', "a{color:red}"
+      Less::More.generate_all
+      assert_include 'a { color: red; }', read_css('xxx/test.css')
     end
 
     should "include imported partials" do
@@ -136,6 +150,36 @@ class MoreTest < ActiveSupport::TestCase
         e.message
       end
       assert_include '/test.less', content
+    end
+  end
+
+  context :remove_all_generated do
+    setup do
+      Less::More.source_path = 'less_files'
+      Less::More.destination_path = 'css'
+      `mkdir -p #{css_path}`
+    end
+
+    teardown do
+      `rm -rf #{css_path}`
+      `rm -rf #{less_path}`
+    end
+
+    should "remove all generated css" do
+      write_less 'xxx.less', 'a{color:red}'
+      write_less 'yyy.css', 'a{color:red}'
+      write_less 'xxx/yyy.css', 'a{color:red}'
+      Less::More.generate_all
+      Less::More.remove_all_generated
+      # should be '' ideally, but an empty folder is no thread :)
+      assert_equal 'xxx', `ls #{css_path}`.strip
+    end
+
+    should "not remove other files" do
+      write_css 'xxx.css', 'a{color:red}'
+      Less::More.generate_all
+      Less::More.remove_all_generated
+      assert_equal 'xxx.css', `ls #{css_path}`.strip
     end
   end
 end
