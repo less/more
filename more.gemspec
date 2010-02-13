@@ -10,7 +10,7 @@ SPEC = Gem::Specification.new do |s|
     parses your applications .less files through LESS and outputs CSS files.
   EOS
   s.authors = ["August Lilleaas", "Logan Raarup"]
-  s.version = "0.0.4"
+  s.version = "0.1.0"
   s.files = FileList["README.markdown", "MIT-LICENSE", "Rakefile", "init.rb", "lib/*.rb", "rails/init.rb", "tasks/*", "test/*"]
   s.has_rdoc = true
   s.add_dependency "less"
