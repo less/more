@@ -88,14 +88,20 @@ class MoreTest < ActiveSupport::TestCase
       `rm -rf #{less_path}`
     end
 
-    should "include import partials" do
+    should 'generate css from .lss files' do
+      write_less 'test.lss', "a{color:red}"
+      Less::More.generate_all
+      assert_include 'a { color: red; }', read_css('test.css')
+    end
+
+    should "include imported partials" do
       write_less 'test.less', "@import '_partial';\nb{color:blue}"
       write_less '_partial.less', 'a{color:red}'
       Less::More.generate_all
       assert_include 'a { color: red; }', read_css('test.css')
     end
 
-    should "not parse partials" do
+    should "not generate css from partials" do
       write_less '_partial.less', 'a{color:red}'
       Less::More.generate_all
       assert_equal '', `ls #{css_path}`.strip
