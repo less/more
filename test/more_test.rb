@@ -51,50 +51,13 @@ class MoreTest < ActiveSupport::TestCase
     end
   end
 
-  def css_path
-    "#{Rails.root}/public/css"
-  end
-
-  def less_path
-    "#{Rails.root}/less_files"
-  end
-
-  def write_less file, content
-    write_content File.join(less_path, file), content
-  end
-
-  def write_css file, content
-    write_content File.join(css_path, file), content
-  end
-
-  def write_content file, content
-    `mkdir -p #{File.dirname(file)}`
-    File.open(file,'w'){|f| f.print content }
-  end
-
-  def read_css(file)
-    File.read(File.join(css_path, file)) rescue nil
-  end
-
-  def assert_include(item, obj)
-    assert_block("#{obj.inspect}\ndoes not include\n#{item.inspect}."){ obj.include? item }
-  end
-
-  def assert_not_include(item, obj)
-    assert_block("#{obj.inspect}\ndoes include\n#{item.inspect}."){ !obj.include? item }
-  end
-
   context :generate do
     setup do
-      Less::More.source_path = 'less_files'
-      Less::More.destination_path = 'css'
-      Less::More.header = false
-      `mkdir -p #{css_path}`
+      setup_for_generate_test
     end
 
     teardown do
-      `rm -rf #{css_path}`
-      `rm -rf #{less_path}`
+      teardown_for_generate_test
     end
 
     should 'generate css from .less files' do
@@ -210,14 +173,11 @@ class MoreTest < ActiveSupport::TestCase
 
   context :remove_all_generated do
     setup do
-      Less::More.source_path = 'less_files'
-      Less::More.destination_path = 'css'
-      `mkdir -p #{css_path}`
+      setup_for_generate_test
     end
 
     teardown do
-      `rm -rf #{css_path}`
-      `rm -rf #{less_path}`
+      teardown_for_generate_test
     end
 
     should "remove all generated css" do
