@@ -168,6 +168,19 @@ class MoreTest < ActiveSupport::TestCase
 
         assert_equal 'a { color: blue; }', read_css('test.css').strip
       end
+
+      should "generate for files with outdated partials that are not named .less" do
+        write_less 'test.less', "@import 'xxx/_test';"
+        write_less 'xxx/_test.less', "a{color:red}"
+        Less::More.generate_all
+
+        write_css 'test.css', 'im updated!'
+        sleep 1 # or mtime will be still the same ...
+        write_less 'xxx/_test.less', "a{color:blue}"
+        Less::More.generate_all
+
+        assert_equal 'a { color: blue; }', read_css('test.css').strip
+      end
     end
   end
 

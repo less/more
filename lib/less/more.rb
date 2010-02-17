@@ -105,7 +105,14 @@ class Less::More
     def mtime_including_imports(file)
       mtimes = [mtime(file)]
       File.readlines(file).each do |line|
-        mtimes << mtime(File.join(File.dirname(file), $1)) if line =~ /^\s*@import ['"]([^'"]+)/
+        if line =~ /^\s*@import ['"]([^'"]+)/
+          imported = File.join(File.dirname(file), $1)
+          mtimes << if imported =~ /\.le?ss$/ # complete path given ?
+            mtime(imported)
+          else # we need to add .less or .lss
+            [mtime("#{imported}.less"), mtime("#{imported}.lss")].max
+          end
+        end
       end
       mtimes.max
     end
