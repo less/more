@@ -18,8 +18,10 @@ Gem::Specification.new do |s|
   s.files = [
     "Rakefile",
     "init.rb",
-    "lib/less/controller_extension.rb",
     "lib/less/more.rb",
+    "lib/more.rb",
+    "lib/more/controller_extension.rb",
+    "lib/more/railtie.rb",
     "lib/tasks/more_tasks.rake",
     "rails/init.rb",
     "test/controller_test.rb",
