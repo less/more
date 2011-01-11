@@ -15,7 +15,7 @@ class Less::More # :nodoc:
 
   class Railtie
     def self.insert
-      require 'less/controller_extension' if Rails.env.development?
+      require 'more/controller_extension' if Rails.env.development?
     end
   end
 end
