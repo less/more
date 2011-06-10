@@ -1,0 +1,48 @@
+PATH
+  remote: .
+  specs:
+    more (0.1.0)
+      less (~> 1.2.21)
+      more
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    actionmailer (2.3.8)
+      actionpack (= 2.3.8)
+    actionpack (2.3.8)
+      activesupport (= 2.3.8)
+      rack (~> 1.1.0)
+    activerecord (2.3.8)
+      activesupport (= 2.3.8)
+    activeresource (2.3.8)
+      activesupport (= 2.3.8)
+    activesupport (2.3.8)
+    less (1.2.21)
+      mutter (>= 0.4.2)
+      treetop (>= 1.4.2)
+    mutter (0.5.3)
+    polyglot (0.3.1)
+    rack (1.1.0)
+    rails (2.3.8)
+      actionmailer (= 2.3.8)
+      actionpack (= 2.3.8)
+      activerecord (= 2.3.8)
+      activeresource (= 2.3.8)
+      activesupport (= 2.3.8)
+      rake (>= 0.8.3)
+    rake (0.9.2)
+    shoulda (2.10.3)
+    treetop (1.4.9)
+      polyglot (>= 0.3.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actionpack (~> 2.3.8)
+  activesupport (~> 2.3.8)
+  more!
+  rails (~> 2.3.8)
+  rake
+  shoulda

@@ -55,6 +55,7 @@ def write_content file, content
 end
 
 def read_css(file)
+  raise ArgumentError.new("#{file.inspect} missing") unless File.exist?(File.join(css_path, file))
   File.read(File.join(css_path, file)) rescue nil
 end
 
