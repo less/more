@@ -29,11 +29,11 @@ class Less::More
     end
 
     def destination_path
-      @destination_path || 'stylesheets'
+      @destination_path || File.join(Rails.root, 'public', 'stylesheets')
     end
 
     def source_path
-      @source_path || 'app/stylesheets'
+      @source_path || File.join(Rails.root, 'app', 'stylesheets')
     end
 
     def compression
@@ -47,7 +47,7 @@ class Less::More
     #   Less::More.generate("subdirectories/here/homepage.less")
     def generate(source)
       generated = to_dot_css(path_to_destination(source))
-      path_to_source = File.join(Rails.root, source_path, source)
+      path_to_source = File.join(source_path, source)
 
       # check if the destination file exists, and compare the modified times to see if it needs to be written
       if mtime(generated) >= mtime_including_imports(path_to_source)
@@ -89,7 +89,7 @@ class Less::More
 
     # Array of paths of less source files.
     def all_less_files
-      all = Dir[File.join(Rails.root, source_path, "**", "*.{css,less,lss}")]
+      all = Dir[File.join(source_path, "**", "*.{css,less,lss}")]
       all.reject{|path| File.basename(path) =~ /^_/ }
     end
 
@@ -119,8 +119,9 @@ class Less::More
 
     def compile(file)
       begin
-        engine = File.open(file){|f| Less::Engine.new(f) }
-        engine.to_css
+        parser = Less::Parser.new :paths => [source_path]
+        tree   = parser.parse File.read(file)
+        tree.to_css
       rescue Exception => e
         e.message << "\nFrom #{file}"
         raise e
@@ -132,11 +133,11 @@ class Less::More
     end
 
     def path_to_destination(path)
-      File.join(Rails.root, "public", destination_path, path)
+      File.join(destination_path, path)
     end
 
     def relative_to_source_path(path)
-      path.to_s.sub(File.join(Rails.root, source_path), '')[1..-1]
+      File.expand_path(path.to_s).sub(File.expand_path(source_path), '')[1..-1]
     end
   end
 end
