@@ -21,6 +21,6 @@ class ControllerTest < ActionController::TestCase
   should "generate less files" do
     write_less 'xxx.less', 'a{color:red}'
     get :test
-    assert_equal 'a { color: red; }', read_css('xxx.css').strip
+    assert_include 'a { color: red; }', read_css('xxx.css').strip
   end
 end

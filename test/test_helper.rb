@@ -55,20 +55,25 @@ def write_content file, content
 end
 
 def read_css(file)
+  raise ArgumentError.new("#{file.inspect} missing") unless File.exist?(File.join(css_path, file))
   File.read(File.join(css_path, file)) rescue nil
 end
 
 def assert_include(item, obj)
-  assert_block("#{obj.inspect}\ndoes not include\n#{item.inspect}."){ obj.include? item }
+  obj_without_whitespace = obj.gsub(/\s/,'')
+  item_without_whitespace = item.gsub(/\s/,'')
+  assert_block("#{obj.inspect}\ndoes not include\n#{item.inspect}."){ obj_without_whitespace.include? item_without_whitespace }
 end
 
 def assert_not_include(item, obj)
-  assert_block("#{obj.inspect}\ndoes include\n#{item.inspect}."){ !obj.include? item }
+  obj_without_whitespace = obj.gsub(/\s/,'')
+  item_without_whitespace = item.gsub(/\s/,'')
+  assert_block("#{obj.inspect}\ndoes include\n#{item.inspect}."){ !obj_without_whitespace.include? item_without_whitespace }
 end
 
 def setup_for_generate_test
-  Less::More.source_path = 'less_files'
-  Less::More.destination_path = 'css'
+  Less::More.source_path = less_path
+  Less::More.destination_path = css_path
   Less::More.header = false
   `mkdir -p #{css_path}`
 end
