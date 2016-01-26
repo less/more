@@ -1,4 +1,4 @@
-### DEPRECATED
+### This repo is DEPRECATED and is only here for historical reasons.
 
 More
 ====
