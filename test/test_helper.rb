@@ -12,9 +12,13 @@ module Rails
   def self.backtrace_cleaner
     ActiveSupport::BacktraceCleaner.new
   end
+  
+  def self.env
+    'development'
+  end
 end
 
-RAILS_ENV = 'development'
+#RAILS_ENV = 'development'
 
 # load plugin
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
